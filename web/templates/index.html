@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SECUREVISION</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #fff;
+            color: #1d3557;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .header .logo img {
+            width: 30px;
+            margin-right: 10px;
+        }
+        .menu {
+            display: flex;
+        }
+        .menu a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #1d3557;
+            font-weight: bold;
+        }
+        .menu a:hover {
+            color: #e63946;
+        }
+        .content {
+            background-color: #e63946;
+            color: white;
+            padding: 40px 20px;
+            margin: 0;
+        }
+        .content h1 {
+            font-size: 32px;
+            margin: 0 0 10px 0;
+        }
+        .content p {
+            font-size: 16px;
+            margin: 0 0 20px 0;
+        }
+        .buttons {
+            margin: 20px;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #a3bffa;
+            color: #1d3557;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .buttons button:hover {
+            background-color: #6d8299;
+        }
+        .how-it-works {
+            padding: 40px 20px;
+            background-color: #f5f5f5;
+            text-align: center;
+        }
+        .how-it-works h2 {
+            font-size: 28px;
+            color: #1d3557;
+            margin-bottom: 10px;
+        }
+        .how-it-works p {
+            font-size: 16px;
+            color: #1d3557;
+            margin-bottom: 30px;
+        }
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .step {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 200px;
+        }
+        .step-number {
+            background-color: #f8b3b8;
+            color: #e63946;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+        }
+        .step h3 {
+            font-size: 18px;
+            color: #1d3557;
+            margin-bottom: 10px;
+        }
+        .step p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        #floating-camera {
+            position: fixed;
+            top: 100px;
+            right: 50px;
+            width: 400px;
+            height: 250px;
+            background: #000;
+            border: 2px solid #1d3557;
+            border-radius: 10px;
+            display: none;
+            z-index: 9999;
+            cursor: move;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        #floating-camera img {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+    </style>
+
+    <script>
+        let cameraOn = false;
+        let imgElement = null;
+        let floatingCamera = null;
+
+        function toggleCamera() {
+            const liveCamButton = document.querySelector('#liveCamButton');
+
+            if (!cameraOn) {
+                cameraOn = true;
+                liveCamButton.textContent = "Stop Cam";
+
+                if (!floatingCamera) {
+                    floatingCamera = document.createElement('div');
+                    floatingCamera.id = 'floating-camera';
+
+                    imgElement = document.createElement('img');
+                    imgElement.src = "{{ url_for('video_feed') }}";
+
+                    floatingCamera.appendChild(imgElement);
+                    document.body.appendChild(floatingCamera);
+
+                    makeDraggable(floatingCamera);
+                }
+
+                floatingCamera.style.display = "block";
+            } else {
+                cameraOn = false;
+                liveCamButton.textContent = "Live Cam";
+                fetch('/stop_camera').then(response => console.log('Camera stopped'));
+
+                if (imgElement) {
+                    imgElement.src = "";
+                    imgElement.remove();
+                    imgElement = null;
+                }
+                if (floatingCamera) {
+                    floatingCamera.remove();
+                    floatingCamera = null;
+                }
+            }
+        }
+
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+            element.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <img src="https://img.icons8.com/ios-filled/50/1d3557/shield.png" alt="Logo">
+            SECUREVISION
+        </div>
+        <div class="menu">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>Prohibited Items Detection System</h1>
+        <p>Advanced AI-powered detection of prohibited items in public spaces using deep learning and computer vision.</p>
+        <div class="buttons">
+            <button id="liveCamButton" onclick="toggleCamera()">Live Cam</button>
+            <form id="uploadForm" action="/upload_video" method="post" enctype="multipart/form-data" style="display: inline;">
+                <input type="file" id="videoInput" name="video" accept="video/*" required style="display: none;">
+                <button type="button" onclick="document.getElementById('videoInput').click()">Upload Video</button>
+            </form>
+        </div>
+        <div id="uploadStatus" style="margin-top: 10px; font-weight: bold; color: #1d3557;"></div>
+    </div>
+
+    <div class="how-it-works">
+        <h2>How It Works</h2>
+        <p>Our system uses state-of-the-art deep learning models to detect prohibited items in public spaces.</p>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Video Input</h3>
+                <p>Capture video from webcam or security cameras</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>AI Processing</h3>
+                <p>YOLO model analyzes frames to detect prohibited items</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const videoInput = document.getElementById('videoInput');
+        const uploadForm = document.getElementById('uploadForm');
+        const statusDiv = document.getElementById('uploadStatus');
+
+        videoInput.addEventListener('change', function () {
+            if (videoInput.files.length > 0) {
+                statusDiv.textContent = "Processing uploaded video...";
+                uploadForm.submit();
+            }
+        });
+    </script>
+</body>
+</html>
