@@ -79,9 +79,7 @@ The model is specifically trained to detect:
 - `KNIFE`
 - `SMOKE`
 
-## 📄 Documentation
-For detailed information regarding the model architecture, dataset, and system design, please refer to the `Final Document.pdf` located in the root directory.
-
 ---
 **Developed for Final Year Project (FYP)**
+
 
