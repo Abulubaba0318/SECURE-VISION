@@ -35,7 +35,6 @@ FYP/
 │   └── templates/          # HTML Templates (index.html)
 ├── captures/               # Saved threat detection frames
 ├── uploads/                # Directory for uploaded videos
-└── Final Document.pdf      # Detailed project documentation
 ```
 
 ## ⚙️ Installation & Setup
@@ -85,3 +84,4 @@ For detailed information regarding the model architecture, dataset, and system d
 
 ---
 **Developed for Final Year Project (FYP)**
+
