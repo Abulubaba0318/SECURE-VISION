@@ -31,7 +31,6 @@ FYP/
 │   ├── app.py              # Main Flask server
 │   ├── best.pt             # Optimized detection model
 │   ├── beep.wav            # Alert sound file
-│   ├── static/             # Static assets (if any)
 │   └── templates/          # HTML Templates (index.html)
 ├── captures/               # Saved threat detection frames
 ├── uploads/                # Directory for uploaded videos
@@ -81,5 +80,6 @@ The model is specifically trained to detect:
 
 ---
 **Developed for Final Year Project (FYP)**
+
 
 
